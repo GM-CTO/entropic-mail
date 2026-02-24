@@ -1,0 +1,19 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Node (for fremtidig npm-pakke)
+node_modules/
+package-lock.json
+
+# Test-data med ekte e-poster
+tests/real-data/
+*.secret
+*.env
+
+# Google Apps Script deploy
+.clasp.json
