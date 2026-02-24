@@ -57,32 +57,6 @@ function analyzeDigitDensity(localPart) {
 }
 
 /**
- * Sjekker om avsenderadressen bruker et generisk prefix.
- * Adresser som noreply@, info@, marketing@ er nesten alltid
- * automatiserte utsendelser, ikke personlig korrespondanse.
- * 
- * NB: Dette er IKKE en svarteliste. Vi sjekker om local-part
- * matcher et generisk MØNSTER, ikke en spesifikk liste.
- * 
- * @param {string} localPart - Delen før @ i e-postadressen
- * @returns {object} { isGeneric: boolean, score: number, reason: string }
- */
-function analyzeGenericPrefix(localPart) {
-  // Mønster: ord som beskriver en FUNKSJON, ikke en person
-  const genericPattern = /^(info|support|news|notify|notification|noreply|no-reply|mail|mailer|contact|office|marketing|admin|sales|billing|help|team|hello|service|alert|update|system|newsletter|promo|do-not-reply|postmaster|webmaster)$/i;
-
-  if (genericPattern.test(localPart)) {
-    return {
-      isGeneric: true,
-      score: 1,
-      reason: `Generisk avsender-prefix: ${localPart}@ (+1)`
-    };
-  }
-
-  return { isGeneric: false, score: 0, reason: "" };
-}
-
-/**
  * Analyserer domenenavnets lengde relativt til TLD.
  * Korte, gjenkjennbare domener (vg.no, dnb.no) er mer
  * troverdige enn lange, komplekse domener.
@@ -169,7 +143,6 @@ function scorePatterns(email) {
   const checks = [
     analyzeSubdomainDepth(email.domain),
     analyzeDigitDensity(email.localPart),
-    analyzeGenericPrefix(email.localPart),
     analyzeDomainLength(email.domain),
     analyzeHyphenUsage(email.domain),
     detectEmojiInSubject(email.subject)
@@ -188,7 +161,7 @@ function scorePatterns(email) {
 // Eksporter
 if (typeof module !== "undefined") {
   module.exports = {
-    analyzeSubdomainDepth, analyzeDigitDensity, analyzeGenericPrefix,
+    analyzeSubdomainDepth, analyzeDigitDensity,
     analyzeDomainLength, analyzeHyphenUsage, detectEmojiInSubject, scorePatterns
   };
 }

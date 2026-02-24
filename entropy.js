@@ -57,8 +57,8 @@ function characterSetMix(str) {
     else if (code >= 0x0600 && code <= 0x06FF) sets.add("arabic");
     else if (code >= 0x0370 && code <= 0x03FF) sets.add("greek");
     else if (code >= 0x0030 && code <= 0x0039) sets.add("digits");
-    else if (code >= 0x2000 && code <= 0x206F) sets.add("invisible-formatting");
     else if (code >= 0x200B && code <= 0x200D) sets.add("zero-width");
+    else if (code >= 0x2000 && code <= 0x206F) sets.add("invisible-formatting");
   }
 
   return { count: sets.size, sets: Array.from(sets) };
@@ -73,12 +73,12 @@ function characterSetMix(str) {
  */
 function invisibleCharacters(str) {
   const invisible = {
-    "\\u200B": "zero-width space",
-    "\\u200C": "zero-width non-joiner",
-    "\\u200D": "zero-width joiner",
-    "\\uFEFF": "byte order mark",
-    "\\u00AD": "soft hyphen",
-    "\\u034F": "combining grapheme joiner",
+    "\\u200b": "zero-width space",
+    "\\u200c": "zero-width non-joiner",
+    "\\u200d": "zero-width joiner",
+    "\\ufeff": "byte order mark",
+    "\\u00ad": "soft hyphen",
+    "\\u034f": "combining grapheme joiner",
     "\\u2060": "word joiner",
     "\\u2062": "invisible times",
     "\\u2063": "invisible separator"

@@ -17,8 +17,6 @@
  * 
  * @param {object} history - Historikk-data fra Gmail-laget
  * @param {number} history.sentToCount - Antall ganger du har sendt til dette domenet
- * @param {number} history.receivedFromCount - Antall e-poster mottatt fra domenet
- * @param {boolean} history.hasRepliedTo - Har du noensinne svart på en mail fra dem?
  * @param {number} history.daysSinceLastSent - Dager siden siste sendte mail til domenet
  * @returns {object} { trustLevel: string, score: number, reason: string }
  */
@@ -28,39 +26,26 @@ function calculateTrust(history) {
     return { trustLevel: "unknown", score: 0, reason: "Ukjent domene – ingen korrespondanse-historikk" };
   }
 
-  // Høy tillit: Du har aktivt sendt e-post til dette domenet
+  // Høy tillit: Du har sendt e-post til dette domenet nylig
+  if (history.sentToCount > 0 && history.daysSinceLastSent < 90) {
+    return {
+      trustLevel: "high",
+      score: -5,
+      reason: `Høy tillit: Du har sendt ${history.sentToCount} mail hit, sist for ${history.daysSinceLastSent}d siden (-5)`
+    };
+  }
+
+  // Middels tillit: Du har sendt e-post, men det var lenge siden
   if (history.sentToCount > 0) {
-    // Nylig kontakt gir sterkere tillit
-    if (history.daysSinceLastSent < 90) {
-      return { 
-        trustLevel: "high", 
-        score: -5, 
-        reason: `Høy tillit: Du har sendt ${history.sentToCount} mail hit, sist for ${history.daysSinceLastSent}d siden (-5)` 
-      };
-    }
-    // Eldre kontakt gir noe tillit
-    return { 
-      trustLevel: "medium", 
-      score: -3, 
-      reason: `Middels tillit: Du har sendt mail hit, men sist for ${history.daysSinceLastSent}d siden (-3)` 
+    return {
+      trustLevel: "medium",
+      score: -3,
+      reason: `Middels tillit: Du har sendt mail hit, men sist for ${history.daysSinceLastSent}d siden (-3)`
     };
   }
 
-  // Noe tillit: Du har svart på en mail fra dem (du initierte ikke, men engasjerte)
-  if (history.hasRepliedTo) {
-    return { 
-      trustLevel: "medium", 
-      score: -2, 
-      reason: "Middels tillit: Du har svart på mail fra dette domenet (-2)" 
-    };
-  }
-
-  // Bare mottatt, aldri engasjert = ingen tillit
-  return { 
-    trustLevel: "low", 
-    score: 0, 
-    reason: `Lav tillit: ${history.receivedFromCount} mottatt, aldri svart eller sendt` 
-  };
+  // Ingen tillit: Aldri sendt til dette domenet
+  return { trustLevel: "none", score: 0, reason: "Ingen tillit: Du har aldri sendt mail til dette domenet" };
 }
 
 /**

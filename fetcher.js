@@ -97,20 +97,8 @@ function lookupTrustHistory(domain) {
       daysSinceLastSent = Math.floor((new Date() - lastSentDate) / (1000 * 60 * 60 * 24));
     }
 
-    // Søk etter mottatte mails fra domenet
-    const receivedThreads = GmailApp.search(`from:@${domain}`, 0, 5);
-    const receivedFromCount = receivedThreads.length;
-
-    // Sjekk om vi har svart på noen av dem
-    let hasRepliedTo = false;
-    if (receivedFromCount > 0 && sentToCount > 0) {
-      hasRepliedTo = true;
-    }
-
     const result = {
       sentToCount,
-      receivedFromCount,
-      hasRepliedTo,
       daysSinceLastSent
     };
 

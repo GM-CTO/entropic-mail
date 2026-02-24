@@ -9,17 +9,17 @@
  * VIKTIG FOR GOOGLE APPS SCRIPT:
  * Google Apps Script bruker IKKE module.exports/import.
  * Alle filer i prosjektet deler samme globale scope.
- * Funksjonene fra engine/* og gmail/* er tilgjengelige direkte.
- * 
- * Rekkefølge i Script Editor:
- * 1. src/engine/entropy.js
- * 2. src/engine/headers.js
- * 3. src/engine/patterns.js
- * 4. src/engine/trust.js
- * 5. src/engine/scorer.js
- * 6. src/gmail/fetcher.js
- * 7. src/gmail/actions.js
- * 8. src/gmail/main.js (denne filen)
+ * Funksjonene fra de andre filene er tilgjengelige direkte.
+ *
+ * Filer i prosjektet:
+ * 1. entropy.js   – Entropi-analyse (engine)
+ * 2. headers.js   – Header-anomalier (engine)
+ * 3. patterns.js  – Strukturelle mønstre (engine)
+ * 4. trust.js     – Tillitssystem (engine)
+ * 5. scorer.js    – Hovedmotor (engine)
+ * 6. fetcher.js   – Gmail → engine-bro (gmail)
+ * 7. actions.js   – Handlinger (gmail)
+ * 8. main.js      – Trigger-inngang (denne filen)
  */
 
 // ============================================================
@@ -27,7 +27,11 @@
 // ============================================================
 const CONFIG = {
   sheetId: "SETT_INN_DIN_SHEET_ID_HER",
-  
+
+  // DRY RUN: Sett til true for å bare logge – ingen Gmail-endringer.
+  // Bruk dette for å teste filteret trygt mot ekte mail.
+  dryRun: true,
+
   // Scoring-konfig (juster for aggressivitet)
   scoring: {
     threshold: 5,      // Over dette = KILL
@@ -72,8 +76,8 @@ function entropicMail() {
       // 2. Kjør scoring-motoren
       const result = scoreEmail(email, CONFIG.scoring);
 
-      // 3. Utfør handling
-      executeAction(thread, message, result, CONFIG.sheetId);
+      // 3. Utfør handling (dry-run = bare logg, ingen Gmail-endringer)
+      executeAction(thread, message, result, CONFIG.sheetId, CONFIG.dryRun);
 
       // 4. Oppdater statistikk
       if (result.action === "KILL") stats.killed++;
@@ -83,7 +87,8 @@ function entropicMail() {
   });
 
   // Logg kjøringsstatistikk
+  const mode = CONFIG.dryRun ? "[DRY RUN] " : "";
   if (stats.killed + stats.warned > 0) {
-    console.log(`Entropic Mail: ${stats.killed} drept, ${stats.warned} advart, ${stats.passed} passert av ${threads.length} tråder`);
+    console.log(`${mode}Entropic Mail: ${stats.killed} drept, ${stats.warned} advart, ${stats.passed} passert av ${threads.length} tråder`);
   }
 }

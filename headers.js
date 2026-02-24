@@ -174,7 +174,20 @@ function extractDomain(headerValue) {
 
 function getRootDomain(domain) {
   const parts = domain.split(".");
-  return parts.length >= 2 ? parts.slice(-2).join(".") : domain;
+  if (parts.length < 2) return domain;
+
+  // Heuristikk for ccTLDs: hvis nest-siste del er kort (co, com, org, net, ac)
+  // og siste del er kort (uk, br, jp, au), bruk 3 deler.
+  // Eksempel: mail.google.co.uk → google.co.uk (ikke co.uk)
+  if (parts.length >= 3) {
+    const secondLast = parts[parts.length - 2];
+    const last = parts[parts.length - 1];
+    if (secondLast.length <= 3 && last.length <= 2) {
+      return parts.slice(-3).join(".");
+    }
+  }
+
+  return parts.slice(-2).join(".");
 }
 
 // Eksporter
