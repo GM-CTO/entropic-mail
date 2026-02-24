@@ -92,3 +92,65 @@ function entropicMail() {
     console.log(`${mode}Entropic Mail: ${stats.killed} drept, ${stats.warned} advart, ${stats.passed} passert av ${threads.length} tråder`);
   }
 }
+
+// ============================================================
+// SETUP (kjør denne én gang for å sette opp alt)
+// ============================================================
+
+/**
+ * Kjør denne funksjonen manuelt én gang.
+ * Den oppretter en Google Sheet for logging, setter opp
+ * kolonneoverskrifter, og gir deg Sheet-ID-en du trenger.
+ *
+ * Etter kjøring: Kopier Sheet-ID fra loggen inn i CONFIG.sheetId.
+ */
+function setupEntropicMail() {
+  // 1. Opprett Sheet
+  const ss = SpreadsheetApp.create("Entropic Mail – Logg");
+  const sheet = ss.getSheets()[0];
+  sheet.setName("Logg");
+
+  // 2. Sett opp kolonneoverskrifter
+  const headers = ["Dato", "Fra", "Emne", "Handling", "Oppsummering", "Score"];
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+
+  // 3. Formater overskriftsraden
+  const headerRange = sheet.getRange(1, 1, 1, headers.length);
+  headerRange.setFontWeight("bold");
+  headerRange.setBackground("#1a1a2e");
+  headerRange.setFontColor("#ffffff");
+
+  // 4. Sett kolonnebredder
+  sheet.setColumnWidth(1, 150);  // Dato
+  sheet.setColumnWidth(2, 250);  // Fra
+  sheet.setColumnWidth(3, 300);  // Emne
+  sheet.setColumnWidth(4, 100);  // Handling
+  sheet.setColumnWidth(5, 500);  // Oppsummering
+  sheet.setColumnWidth(6, 80);   // Score
+
+  // 5. Frys overskriftsraden
+  sheet.setFrozenRows(1);
+
+  // 6. Opprett Gmail-labels
+  getLabels();
+
+  // 7. Vis Sheet-ID i loggen
+  const sheetId = ss.getId();
+  const sheetUrl = ss.getUrl();
+
+  console.log("===========================================");
+  console.log("Entropic Mail er satt opp!");
+  console.log("===========================================");
+  console.log("");
+  console.log("Sheet-ID (kopier denne inn i CONFIG.sheetId):");
+  console.log(sheetId);
+  console.log("");
+  console.log("Sheet-URL (legg til som bokmerke):");
+  console.log(sheetUrl);
+  console.log("");
+  console.log("Neste steg:");
+  console.log("1. Kopier Sheet-ID over inn i CONFIG.sheetId");
+  console.log("2. Sett opp en tidsbasert trigger for entropicMail()");
+  console.log("   (Rediger → Triggere → Legg til → entropicMail → Hvert 5. minutt)");
+  console.log("3. La dryRun stå som true til du er fornøyd med loggen");
+}
