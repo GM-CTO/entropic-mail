@@ -35,7 +35,8 @@
 const DEFAULT_CONFIG = {
   threshold: 5,        // Poenggrense for å klassifisere som spam
   warningZone: 3,      // Poeng over dette = faresone (men ikke drept)
-  
+  userEmail: null,      // Brukerens e-post (for self-spoofing-deteksjon)
+
   // Modul-vekter (multiplikatorer for å justere aggressivitet)
   weights: {
     entropy: 1.0,
@@ -82,7 +83,10 @@ function scoreEmail(email, config) {
   results.patterns = scorePatterns({
     localPart: email.localPart,
     domain: email.domain,
-    subject: email.subject
+    subject: email.subject,
+    displayName: email.displayName,
+    fromAddress: email.fromAddress,
+    userEmail: cfg.userEmail || null
   });
   results.patterns.score *= cfg.weights.patterns;
 

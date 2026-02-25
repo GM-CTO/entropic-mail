@@ -119,7 +119,7 @@ function scoreEntropy(domain, subject) {
   if (entropy > 4.0) {
     score += 4;
     reasons.push(`Svært høy domene-entropi: ${entropy} (+4)`);
-  } else if (entropy > 3.5) {
+  } else if (entropy > 3.2) {
     score += 2;
     reasons.push(`Høy domene-entropi: ${entropy} (+2)`);
   }
