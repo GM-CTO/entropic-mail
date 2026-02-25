@@ -36,7 +36,7 @@ const CONFIG = {
   scoring: {
     threshold: 5,      // Over dette = KILL
     warningZone: 3,    // Over dette = WARNING
-    userEmail: "SETT_INN_DIN_EPOST_HER",  // Din e-postadresse (for spoofing-deteksjon)
+    userEmail: Session.getActiveUser().getEmail(),  // Hentes automatisk fra innlogget konto
     weights: {
       entropy: 1.0,    // Domene-analyse
       headers: 1.0,    // Header-anomalier
